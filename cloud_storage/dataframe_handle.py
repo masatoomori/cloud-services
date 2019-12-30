@@ -10,6 +10,16 @@ FILE_NAME = '<file name in GCS>'
 DATA_FILE = '<path to data>.csv'
 
 
+def list_blobs(bucket_name):
+    """Lists all the blobs in the bucket."""
+    storage_client = storage.Client()
+
+    # Note: Client.list_blobs requires at least package version 1.17.0.
+    blobs = storage_client.list_blobs(bucket_name)
+
+    return blobs
+
+
 def upload_file(source_file, destination_file, bucket, content_type='application/vnd.ms-excel'):
     blob = bucket.blob(destination_file)
     blob.upload_from_filename(filename=source_file, content_type=content_type)
