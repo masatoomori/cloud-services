@@ -1,5 +1,6 @@
 from google.cloud import storage        # pip install google-cloud-storage
 import os
+import re
 from io import StringIO
 import pandas as pd
 
@@ -25,14 +26,22 @@ def upload_file(source_file, destination_file, bucket, content_type='application
     blob.upload_from_filename(filename=source_file, content_type=content_type)
 
 
-def upload_dataframe(df, destination_file, bucket, content_type='application/vnd.ms-excel'):
+def upload_dataframe(df, destination_file, bucket, index=False, content_type='application/vnd.ms-excel'):
     blob = bucket.blob(destination_file)
-    bytes_to_write = df.to_csv(None, index=False).encode()
+    bytes_to_write = df.to_csv(None, index=index).encode()
     blob.upload_from_string(bytes_to_write, content_type=content_type)
 
 
-def download_dataframe(source_file, bucket, encoding='utf8'):
+def download_dataframe(source_file, bucket, encoding='utf8', skip_rows=0, line_feed_code='\n'):
     content = bucket.get_blob(source_file).download_as_string().decode(encoding)
+    lines = re.split(line_feed_code, content)
+
+    buff = list()
+    for i, line in enumerate(lines):
+        if i >= skip_rows:
+            buff.append(line)
+    content = '{}'.format(line_feed_code).join(buff)
+
     df = pd.read_csv(StringIO(content))
 
     return df
