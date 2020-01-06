@@ -10,7 +10,10 @@ def main():
     client = bigquery.Client()
     query = """SELECT
             *
-        FROM {ds}.{t}
+        FROM
+            {ds}.{t}
+        WHERE
+            <date column> BETWEEN "<date in ISO format>" AND "<date in ISO format>"     -- 日付範囲指定
     """.format(ds=BQ_DATASET_NAME, t=TABLE_ID)
 
     df = client.query(query).result().to_dataframe()
