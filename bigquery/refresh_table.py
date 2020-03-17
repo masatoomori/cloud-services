@@ -2,12 +2,17 @@ from google.cloud import bigquery       # pip install google-cloud-bigquery
 from google.cloud import storage        # pip install google-cloud-storage
 import os
 
+# GCPのリソースにアクセスするためのCredentialを設定
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '<service account defined in GCP>.json'
+
+# 元テキストデータの保管場所。ここ以下にあるCSVファイルをBigQueryへアップロードする
 SOURCE_BUCKET_NAME = '<bucket name>'
 
+# 保存先BigQueryのデータセット名、テーブル名
 BQ_DATASET_NAME = '<dataset name>'
 TABLE_ID = '<table name>'
 
+# BigQuery側のスキーマ
 SCHEMA = [
     bigquery.SchemaField('<column 0>', 'INTEGER'),
     bigquery.SchemaField('<column 1>', 'DATE'),
