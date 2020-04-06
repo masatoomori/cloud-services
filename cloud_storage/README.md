@@ -7,6 +7,12 @@
     1. JSONタイプのキーを作成する
 1. ダウンロードしたJSONファイルを任意の場所に保管する
 
+## パッケージ
+必要なパッケージをインストールする
+```bash
+$ pip install google-cloud-storage
+```
+
 ## 利用
 サービスアカウントのキーファイルを環境変数 GOOGLE_APPLICATION_CREDENTIALS に設定する
 ```python
