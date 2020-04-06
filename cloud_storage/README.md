@@ -19,3 +19,6 @@ $ pip install google-cloud-storage
 import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "<ダウンロードしたJSONファイル>"
 ```
+
+## 注意
+BigQuery の外部テーブルとして利用する場合、2020年4月6日現在、us-central1のものしか参照できない
