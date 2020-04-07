@@ -4,11 +4,7 @@ import re
 from io import StringIO
 import pandas as pd
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '<service account defined in GCP>.json'
-BUCKET_NAME = '<bucket name>'
-FILE_NAME = '<file name in GCS>'
-
-DATA_FILE = '<path to data>.csv'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'credentials.json'
 
 
 def list_blobs(bucket_name):
@@ -54,19 +50,24 @@ def download_dataframe(source_file, bucket, encodings, skip_rows=0, line_feed_co
 
 
 def main():
+    bucket_name = '<bucket name>'
+    gcs_source_file = '<file name in GCS>'
+    gcs_destination_file = '<file name in GCS>'
+    local_source_file = '<path to data>.csv'
+
     client = storage.Client()
-    bucket = client.bucket(BUCKET_NAME)
+    bucket = client.bucket(bucket_name)
 
     # ファイルをアップロードする
-    upload_file(source_file=DATA_FILE, destination_file=FILE_NAME, bucket=bucket,
+    upload_file(source_file=local_source_file, destination_file=gcs_destination_file, bucket=bucket,
                 content_type='application/vnd.ms-excel')
 
     # DataFrameをアップロードする
     df = pd.DataFrame()
-    upload_dataframe(df, destination_file=FILE_NAME, bucket=bucket, content_type='application/vnd.ms-excel')
+    upload_dataframe(df, destination_file=gcs_destination_file, bucket=bucket, content_type='application/vnd.ms-excel')
 
     # DataFrameにダウンロードする
-    df = download_dataframe(source_file=FILE_NAME, bucket=bucket, encodings=['utf8'])
+    df = download_dataframe(source_file=gcs_source_file, bucket=bucket, encodings=['utf8'])
     print(df)
 
 
