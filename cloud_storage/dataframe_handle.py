@@ -3,6 +3,8 @@ import os
 import re
 from io import StringIO
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'credentials.json'
 
@@ -24,8 +26,21 @@ def upload_file(source_file, destination_file, bucket, content_type='application
 
 def upload_dataframe(df, destination_file, bucket, index=False, content_type='application/vnd.ms-excel'):
     blob = bucket.blob(destination_file)
-    bytes_to_write = df.to_csv(None, index=index).encode()
-    blob.upload_from_string(bytes_to_write, content_type=content_type)
+
+    if content_type in ['csv', 'application/vnd.ms-excel']:
+        bytes_to_write = df.to_csv(None, index=index).encode()
+        blob.upload_from_string(bytes_to_write, content_type=content_type)
+    elif content_type in ['parquet']:
+        # pyarrowのTableに変換
+        table = pa.Table.from_pandas(df)
+
+        # Bufferにテーブルを書き込み
+        buf = pa.BufferOutputStream()
+        pq.write_table(table, buf, compression=None)
+
+        blob.upload_from_string(data=buf.getvalue().to_pybytes())
+    else:
+        print('invalid content_type selected')
 
 
 def download_dataframe(source_file, bucket, encodings, skip_rows=0, line_feed_code='\n'):
