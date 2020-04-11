@@ -47,6 +47,45 @@ gcloud scheduler jobs create pubsub <ジョブ名> \
 - <タイムゾーン> に "Asia/Tokyo" を指定する
 - <送信メッセージ>" に "cron test" を指定する
 
+## Google Cloud Storage にファイルがアップロードされた時に実行する
+トリガーは Bucket 単位でしか設定できない（ファイル単位やディレクトリ単位は不可）なので、
+Cloud Functions を Bucket トリガー単位で作成し、アップロードされたファイル名を
+実行時に取得して、その内容によって続く処理を選択する関数を作成する。
+
+関数実行時に受け取る第一引数は下記：
+```python
+event = {
+    'bucket': '<bucket name>',
+    'contentType': 'text/plain',
+    'crc32c': 'xxxxxx==',
+    'etag': 'xxxxx/xxxxxxxxx=',
+    'generation': '<integer>',
+    'id': '<bucket name>/<file name>/<generation>',
+    'kind': 'storage#object',
+    'md5Hash': 'xxxxxxxxxxxxxxxxxxxxxx==',
+    'mediaLink': 'https://www.googleapis.com/download/storage/v1/b/<bucket name>/o/<file name>?generation=<generation>&alt=media',
+    'metageneration': '1',
+    'name': '<file name>',
+    'selfLink': 'https://www.googleapis.com/storage/v1/b/<bucket name>/o/<file name>',
+    'size': '<integer>',
+    'storageClass': 'STANDARD',
+    'timeCreated': 'YYYY-MM-DDThh:mm:ss.sssZ',
+    'timeStorageClassUpdated': 'YYYY-MM-DDThh:mm:ss.sssZ',
+    'updated': 'YYYY-MM-DDThh:mm:ss.sssZ'
+}
+```
+
+### Cloud Functions の作成
+main.py に関数を記述し、main.py が存在するディレクトリで下記スクリプトを実行する。
+```shell script
+gcloud functions deploy <main.py に存在するデプロイする関数名> \
+    --runtime=python37 \
+    --trigger-resource=<bucket name for trigger> \
+    --trigger-event=google.storage.object.finalize \
+    --timeout=540s \
+    --memory=2048MB
+```
+
 
 ## メンテナンスする
 ### Cloud Scheduler Job の削除
