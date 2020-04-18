@@ -44,23 +44,27 @@ def upload_dataframe(df, destination_file, bucket, index=False, content_type='ap
 
 
 def download_dataframe(source_file, bucket, encodings, skip_rows=0, line_feed_code='\n'):
-    for encoding in encodings:
-        try:
-            content = bucket.get_blob(source_file).download_as_string().decode(encoding)
-            lines = re.split(line_feed_code, content)
+    if encodings:
+        for encoding in encodings:
+            try:
+                content = bucket.get_blob(source_file).download_as_string().decode(encoding)
+                lines = re.split(line_feed_code, content)
 
-            buff = list()
-            for i, line in enumerate(lines):
-                if i >= skip_rows:
-                    buff.append(line)
-            content = '{}'.format(line_feed_code).join(buff)
+                buff = list()
+                for i, line in enumerate(lines):
+                    if i >= skip_rows:
+                        buff.append(line)
+                content = '{}'.format(line_feed_code).join(buff)
 
-            df = pd.read_csv(StringIO(content))
+                df = pd.read_csv(StringIO(content))
 
-            return df
-        except Exception as e:
-            print(e)
-            continue
+                return df
+            except Exception as e:
+                print(e)
+                continue
+    else:
+        print('ERROR: download_dataframe({s}, {b}). Specify at least on encoding'.format(s=source_file, b=bucket))
+        exit()
     return pd.DataFrame()
 
 
