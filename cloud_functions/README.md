@@ -47,6 +47,30 @@ gcloud scheduler jobs create pubsub <ジョブ名> \
 - <タイムゾーン> に "Asia/Tokyo" を指定する
 - <送信メッセージ>" に "cron test" を指定する
 
+関数実行時に受け取る第一引数は下記：
+```python
+event = {
+    "insertId": "000000-xxxxxxxx-xxxx-0000-0000-000000000000",
+    "labels": {
+        "execution_id": "000000000000"
+    },
+    "logName": "projects/<project ID>/logs/cloudfunctions.googleapis.com%2Fcloud-functions",
+    "receiveTimestamp": "YYYY-MM-DDThh:mm:ss.sssssssssZ",
+    "resource": {
+        "labels": {
+            "function_name": "<function name>",
+            "project_id": "<project ID>",
+            "region": "<region>"
+        },
+        "type": "cloud_function"   
+    },
+    "severity": "INFO",
+    "textPayload": "{'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': None, 'data': 'XXXXXXXXXXXXXXXXXXXXXXX='}",
+    "timestamp": "YYYY-MM-DDThh:mm:ss.sssZ",        # UTC だと思う
+    "trace": "projects/<project ID>/traces/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
 ## Google Cloud Storage にファイルがアップロードされた時に実行する
 トリガーは Bucket 単位でしか設定できない（ファイル単位やディレクトリ単位は不可）なので、
 Cloud Functions を Bucket トリガー単位で作成し、アップロードされたファイル名を
