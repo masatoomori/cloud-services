@@ -71,6 +71,11 @@ event = {
 }
 ```
 
+timestamp を Python の datetime 型に変更して日本時間の実行時刻を取得するには下記を実行する
+```python
+now = datetime.datetime.strptime(event["timestamp"], '%Y-%m-%dT%H:%M:%S.%fZ') + datetime.timedelta(hours=9)
+```
+
 ## Google Cloud Storage にファイルがアップロードされた時に実行する
 トリガーは Bucket 単位でしか設定できない（ファイル単位やディレクトリ単位は不可）なので、
 Cloud Functions を Bucket トリガー単位で作成し、アップロードされたファイル名を
