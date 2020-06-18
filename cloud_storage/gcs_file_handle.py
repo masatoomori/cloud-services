@@ -26,12 +26,18 @@ def blob_exists(blob_name, bucket_name):
     return False
 
 
-def upload_file(source_file, destination_file, bucket, content_type='application/vnd.ms-excel'):
+def upload_file(source_file, destination_file, bucket_name, content_type='application/vnd.ms-excel'):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+
     blob = bucket.blob(destination_file)
     blob.upload_from_filename(filename=source_file, content_type=content_type)
 
 
-def upload_dataframe(df, destination_file, bucket, index=False, content_type='application/vnd.ms-excel'):
+def upload_dataframe(df, destination_file, bucket_name, index=False, content_type='application/vnd.ms-excel'):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+
     blob = bucket.blob(destination_file)
 
     if content_type in ['csv', 'application/vnd.ms-excel']:
@@ -50,7 +56,10 @@ def upload_dataframe(df, destination_file, bucket, index=False, content_type='ap
         print('invalid content_type selected')
 
 
-def download_dataframe(source_file, bucket, encodings, skip_rows=0, line_feed_code='\n'):
+def download_dataframe(source_file, bucket_name, encodings, skip_rows=0, line_feed_code='\n'):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+
     if encodings:
         for encoding in encodings:
             try:
@@ -81,19 +90,17 @@ def main():
     gcs_destination_file = '<file name in GCS>'
     local_source_file = '<path to data>.csv'
 
-    client = storage.Client()
-    bucket = client.bucket(bucket_name)
-
     # ファイルをアップロードする
-    upload_file(source_file=local_source_file, destination_file=gcs_destination_file, bucket=bucket,
+    upload_file(source_file=local_source_file, destination_file=gcs_destination_file, bucket_name=bucket_name,
                 content_type='application/vnd.ms-excel')
 
     # DataFrameをアップロードする
     df = pd.DataFrame()
-    upload_dataframe(df, destination_file=gcs_destination_file, bucket=bucket, content_type='application/vnd.ms-excel')
+    upload_dataframe(df, destination_file=gcs_destination_file, bucket_name=bucket_name,
+                     content_type='application/vnd.ms-excel')
 
     # DataFrameにダウンロードする
-    df = download_dataframe(source_file=gcs_source_file, bucket=bucket, encodings=['utf8'])
+    df = download_dataframe(source_file=gcs_source_file, bucket_name=bucket_name, encodings=['utf8'])
     print(df)
 
 
