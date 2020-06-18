@@ -19,6 +19,13 @@ def list_blobs(bucket_name):
     return blobs
 
 
+def blob_exists(blob_name, bucket_name):
+    for b in list_blobs(bucket_name):
+        if b.name == blob_name:
+            return True
+    return False
+
+
 def upload_file(source_file, destination_file, bucket, content_type='application/vnd.ms-excel'):
     blob = bucket.blob(destination_file)
     blob.upload_from_filename(filename=source_file, content_type=content_type)
