@@ -2,6 +2,7 @@ from google.cloud import storage        # pip install google-cloud-storage
 import os
 import re
 from io import StringIO
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -9,21 +10,43 @@ import pyarrow.parquet as pq
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'credentials.json'
 
 
-def list_blobs(bucket_name):
+def list_blobs(bucket_name, prefix=None):
     """Lists all the blobs in the bucket."""
     storage_client = storage.Client()
 
     # Note: Client.list_blobs requires at least package version 1.17.0.
-    blobs = storage_client.list_blobs(bucket_name)
+    blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
 
     return blobs
 
 
 def blob_exists(blob_name, bucket_name):
-    for b in list_blobs(bucket_name):
-        if b.name == blob_name:
-            return True
-    return False
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    return blob.exists()
+
+
+def delete_blob(blob_name, bucket_name):
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    try:
+        blob.delete()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+def upload_text(message, destination_file, bucket_name):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+
+    blob = bucket.blob(destination_file)
+    blob.upload_from_string(data=message)
 
 
 def upload_file(source_file, destination_file, bucket_name, content_type='application/vnd.ms-excel'):
