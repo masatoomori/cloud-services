@@ -1,20 +1,21 @@
-from google.cloud import storage        # pip install google-cloud-storage
 import os
 import re
 from io import StringIO
+
+from google.cloud import storage        # pip install google-cloud-storage
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'credentials.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'horse-race-263506-744e3e1e7e55.json'
 
 
-def list_blobs(bucket_name):
+def list_blobs(bucket_name, prefix=None):
     """Lists all the blobs in the bucket."""
     storage_client = storage.Client()
 
     # Note: Client.list_blobs requires at least package version 1.17.0.
-    blobs = storage_client.list_blobs(bucket_name)
+    blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
 
     return blobs
 
@@ -56,7 +57,7 @@ def upload_dataframe(df, destination_file, bucket_name, index=False, content_typ
         print('invalid content_type selected')
 
 
-def download_dataframe(source_file, bucket_name, encodings, skip_rows=0, line_feed_code='\n'):
+def download_dataframe(source_file, bucket_name, encodings, skip_rows=0, line_feed_code='\n', dtype=object):
     client = storage.Client()
     bucket = client.bucket(bucket_name)
 
@@ -72,7 +73,7 @@ def download_dataframe(source_file, bucket_name, encodings, skip_rows=0, line_fe
                         buff.append(line)
                 content = '{}'.format(line_feed_code).join(buff)
 
-                df = pd.read_csv(StringIO(content))
+                df = pd.read_csv(StringIO(content), dtype=dtype)
 
                 return df
             except Exception as e:
