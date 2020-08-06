@@ -21,10 +21,32 @@ def list_blobs(bucket_name, prefix=None):
 
 
 def blob_exists(blob_name, bucket_name):
-    for b in list_blobs(bucket_name):
-        if b.name == blob_name:
-            return True
-    return False
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    return blob.exists()
+
+
+def delete_blob(blob_name, bucket_name):
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    try:
+        blob.delete()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+def upload_text(message, destination_file, bucket_name):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+
+    blob = bucket.blob(destination_file)
+    blob.upload_from_string(data=message)
 
 
 def upload_file(source_file, destination_file, bucket_name, content_type='application/vnd.ms-excel'):
