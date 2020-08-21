@@ -7,7 +7,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'horse-race-263506-744e3e1e7e55.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'credentials.json'
 
 
 def list_blobs(bucket_name, prefix=None):
