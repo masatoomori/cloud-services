@@ -1,8 +1,11 @@
-from google.cloud import storage        # pip install google-cloud-storage
 import os
 import re
 from io import StringIO
+from io import BytesIO
 
+import msoffcrypto
+import tempfile
+from google.cloud import storage        # pip install google-cloud-storage
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -79,31 +82,48 @@ def upload_dataframe(df, destination_file, bucket_name, index=False, content_typ
         print('invalid content_type selected')
 
 
-def download_dataframe(source_file, bucket_name, encodings, skip_rows=0, line_feed_code='\n'):
+def download_dataframe(source_file, bucket_name, encodings, sheet_name=None, password=None, skip_rows=0, line_feed_code='\n', dtype=object):
     client = storage.Client()
     bucket = client.bucket(bucket_name)
 
-    if encodings:
-        for encoding in encodings:
-            try:
-                content = bucket.get_blob(source_file).download_as_string().decode(encoding)
-                lines = re.split(line_feed_code, content)
+    if source_file.endswith('.csv'):
+        if encodings:
+            for encoding in encodings:
+                try:
+                    content = bucket.get_blob(source_file).download_as_string().decode(encoding)
+                    lines = re.split(line_feed_code, content)
 
-                buff = list()
-                for i, line in enumerate(lines):
-                    if i >= skip_rows:
-                        buff.append(line)
-                content = '{}'.format(line_feed_code).join(buff)
+                    buff = list()
+                    for i, line in enumerate(lines):
+                        if i >= skip_rows:
+                            buff.append(line)
+                    content = '{}'.format(line_feed_code).join(buff)
 
-                df = pd.read_csv(StringIO(content))
+                    df = pd.read_csv(StringIO(content), dtype=dtype)
 
-                return df
-            except Exception as e:
-                print(e)
-                continue
-    else:
-        print('ERROR: download_dataframe({s}, {b}). Specify at least on encoding'.format(s=source_file, b=bucket))
-        exit()
+                    return df
+                except Exception as e:
+                    print(e)
+                    continue
+        else:
+            print('ERROR: download_dataframe({s}, {b}). Specify at least on encoding'.format(s=source_file, b=bucket))
+            exit()
+
+    elif source_file.endswith('.xlsx') or source_file.endswith('.xls'):
+        blob = storage.blob.Blob(source_file, bucket)
+        content = blob.download_as_string()
+        content_byte = BytesIO(content)
+
+        if password:
+            with tempfile.TemporaryFile() as tf:
+                office_file = msoffcrypto.OfficeFile(content_byte)
+                office_file.load_key(password=password)
+                office_file.decrypt(tf)
+                df = pd.read_excel(tf, sheet_name=sheet_name, skiprows=skip_rows, dtype=dtype)
+        else:
+            df = pd.read_excel(content_byte, sheet_name=sheet_name, skiprows=skip_rows, dtype=dtype)
+        return df
+
     return pd.DataFrame()
 
 
