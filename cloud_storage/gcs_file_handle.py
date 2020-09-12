@@ -3,6 +3,8 @@ import re
 from io import StringIO
 from io import BytesIO
 
+import msoffcrypto
+import tempfile
 from google.cloud import storage        # pip install google-cloud-storage
 import pandas as pd
 import pyarrow as pa
@@ -80,7 +82,7 @@ def upload_dataframe(df, destination_file, bucket_name, index=False, content_typ
         print('invalid content_type selected')
 
 
-def download_dataframe(source_file, bucket_name, encodings, skip_rows=0, line_feed_code='\n', dtype=object, sheet_name=0):
+def download_dataframe(source_file, bucket_name, encodings, sheet_name=None, password=None, skip_rows=0, line_feed_code='\n', dtype=object):
     client = storage.Client()
     bucket = client.bucket(bucket_name)
 
@@ -107,10 +109,19 @@ def download_dataframe(source_file, bucket_name, encodings, skip_rows=0, line_fe
             print('ERROR: download_dataframe({s}, {b}). Specify at least on encoding'.format(s=source_file, b=bucket))
             exit()
 
-    if source_file.endswith('.xlsx') or source_file.endswith('.xls'):
+    elif source_file.endswith('.xlsx') or source_file.endswith('.xls'):
         blob = storage.blob.Blob(source_file, bucket)
         content = blob.download_as_string()
-        df = pd.read_excel(BytesIO(content), skiprows=skip_rows, dtype=dtype, sheet_name=sheet_name)
+        content_byte = BytesIO(content)
+
+        if password:
+            with tempfile.TemporaryFile() as tf:
+                office_file = msoffcrypto.OfficeFile(content_byte)
+                office_file.load_key(password=password)
+                office_file.decrypt(tf)
+                df = pd.read_excel(tf, sheet_name=sheet_name, skiprows=skip_rows, dtype=dtype)
+        else:
+            df = pd.read_excel(content_byte, sheet_name=sheet_name, skiprows=skip_rows, dtype=dtype)
         return df
 
     return pd.DataFrame()
