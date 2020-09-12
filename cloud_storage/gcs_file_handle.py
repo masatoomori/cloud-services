@@ -82,7 +82,7 @@ def upload_dataframe(df, destination_file, bucket_name, index=False, content_typ
         print('invalid content_type selected')
 
 
-def download_dataframe(source_file, bucket_name, encodings, sheet_name=None, password=None, skip_rows=0, line_feed_code='\n', dtype=object):
+def download_dataframe(source_file, bucket_name, encodings, sheet_name=0, password=None, skip_rows=0, line_feed_code='\n', dtype=object):
     client = storage.Client()
     bucket = client.bucket(bucket_name)
 
