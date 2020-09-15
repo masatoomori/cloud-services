@@ -21,11 +21,13 @@ def upload_file(source_file, destination_file, bucket):
 
 
 def upload_dict_as_json(data, destination_file, bucket):
+    # will migrate to gcs_file_handle.py
     blob = bucket.blob(destination_file)
     blob.upload_from_string(json.dumps(data))
 
 
 def download_json_as_dict(source_file, bucket):
+    # will migrate to gcs_file_handle.py
     content = bucket.get_blob(source_file).download_as_string()
     return json.loads(content)
 

@@ -2,6 +2,7 @@ import os
 import re
 from io import StringIO
 from io import BytesIO
+import json
 
 import msoffcrypto
 import tempfile
@@ -125,6 +126,20 @@ def download_dataframe(source_file, bucket_name, encodings, sheet_name=0, passwo
         return df
 
     return pd.DataFrame()
+
+
+def upload_dict_as_json(dict_data, destination_file, bucket_name):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(destination_file)
+    blob.upload_from_string(json.dumps(dict_data))
+
+
+def download_json_as_dict(source_file, bucket_name):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    content = bucket.get_blob(source_file).download_as_string()
+    return json.loads(content)
 
 
 def main():
