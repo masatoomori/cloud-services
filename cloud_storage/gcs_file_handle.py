@@ -70,6 +70,10 @@ def upload_dataframe(df, destination_file, bucket_name, index=False, content_typ
     if content_type in ['csv', 'application/vnd.ms-excel']:
         bytes_to_write = df.to_csv(None, index=index).encode()
         blob.upload_from_string(bytes_to_write, content_type=content_type)
+    elif content_type in ['application/json']:
+        bytes_to_write = df.to_json(None).encode()
+        blob.upload_from_string(bytes_to_write, content_type=content_type)
+
     elif content_type in ['parquet']:
         # pyarrowのTableに変換
         table = pa.Table.from_pandas(df)
