@@ -1,0 +1,10 @@
+{
+  "region": "ap-northeast-1",
+  "function": "<function name>",
+  "profile": "<profile name at ~/.aws/credentials>",
+  "cred_files": [
+    "<credential file 1 to upload to AWS Lambda>",
+    "<credential file 2 to upload to AWS Lambda>",
+    "..."
+  ]
+}
