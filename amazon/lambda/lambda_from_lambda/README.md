@@ -35,7 +35,8 @@ def lambda_handler(event: dict, context):
 
 ## ロールの設定
 
-呼び出す側の実行ロールに下記を足す
+呼び出す側の実行ロールに下記を足す。
+`AWSLambdaRole` をというポリシーをアッタッチしたらできた。
 
 ```json
 {
