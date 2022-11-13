@@ -9,11 +9,9 @@ logger.setLevel(logging.INFO)
 
 SUBFUNCTION_NAME = 'lambda_subfunction'
 
-
-def lambda_handler(event, context):
-    logger.info(json.dumps(event))
-
-    print(f'payload to subfunction: {event}')
+def call_subfunction(event_orig, i):
+    event = event_orig.copy()
+    event.update({'num_call': i})
 
     client = boto3.client('lambda')
     client.invoke(
@@ -22,6 +20,15 @@ def lambda_handler(event, context):
         LogType='Tail',
         Payload=json.dumps(event)
     )
+
+
+def lambda_handler(event, context):
+    logger.info(json.dumps(event))
+
+    print(f'payload to subfunction: {event}')
+
+    call_subfunction(event, 1)
+    call_subfunction(event, 2)
 
     return {
         'statusCode': 200,

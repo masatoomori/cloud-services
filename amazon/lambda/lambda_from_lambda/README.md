@@ -73,14 +73,15 @@ Response
 }
 
 Function Logs
-START RequestId: xxxxxxxx-xxxx-xxxx-91f8-24d62b663157 Version: $LATEST
-[INFO]	2022-mm-ddThh:mm:ss.sssZ	xxxxxxxx-xxxx-xxxx-91f8-24d62b663157	{"key1": "value1", "key2": "value2", "key3": "value3"}
+START RequestId: xxxxxxxx-xxxx-xxxx-8f5a-8dfbbd8613aa Version: $LATEST
+[INFO]	2022-mm-ddT07:56:51.922Z	xxxxxxxx-xxxx-xxxx-8f5a-8dfbbd8613aa	{"key1": "value1", "key2": "value2", "key3": "value3"}
 payload to subfunction: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
-END RequestId: xxxxxxxx-xxxx-xxxx-91f8-24d62b663157
-REPORT RequestId: xxxxxxxx-xxxx-xxxx-91f8-24d62b663157	Duration: 289.13 ms	Billed Duration: 290 ms	Memory Size: 128 MB	Max Memory Used: 66 MB
+[INFO]	2022-mm-ddT07:56:52.122Z	xxxxxxxx-xxxx-xxxx-8f5a-8dfbbd8613aa	Found credentials in environment variables.
+END RequestId: xxxxxxxx-xxxx-xxxx-8f5a-8dfbbd8613aa
+REPORT RequestId: xxxxxxxx-xxxx-xxxx-8f5a-8dfbbd8613aa	Duration: 1518.83 ms	Billed Duration: 1519 ms	Memory Size: 128 MB	Max Memory Used: 65 MB	Init Duration: 289.86 ms
 
 Request ID
-xxxxxxxx-xxxx-xxxx-91f8-24d62b663157
+xxxxxxxx-xxxx-xxxx-8f5a-8dfbbd8613aa
 ```
 
 ## 参考
