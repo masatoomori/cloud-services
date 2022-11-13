@@ -48,6 +48,41 @@ def lambda_handler(event: dict, context):
 }
 ```
 
+## テスト
+
+### テストイベント
+
+```json
+{
+  "key1": "value1",
+  "key2": "value2",
+  "key3": "value3"
+}
+```
+
+### テスト結果
+
+```text
+Test Event Name
+test
+
+Response
+{
+  "statusCode": 200,
+  "body": "\"Finished main function\""
+}
+
+Function Logs
+START RequestId: xxxxxxxx-xxxx-xxxx-91f8-24d62b663157 Version: $LATEST
+[INFO]	2022-mm-ddThh:mm:ss.sssZ	xxxxxxxx-xxxx-xxxx-91f8-24d62b663157	{"key1": "value1", "key2": "value2", "key3": "value3"}
+payload to subfunction: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
+END RequestId: xxxxxxxx-xxxx-xxxx-91f8-24d62b663157
+REPORT RequestId: xxxxxxxx-xxxx-xxxx-91f8-24d62b663157	Duration: 289.13 ms	Billed Duration: 290 ms	Memory Size: 128 MB	Max Memory Used: 66 MB
+
+Request ID
+xxxxxxxx-xxxx-xxxx-91f8-24d62b663157
+```
+
 ## 参考
 
 https://rukurx.hatenablog.jp/entry/2020/07/28/112009
