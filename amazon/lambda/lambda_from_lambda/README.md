@@ -33,6 +33,20 @@ def lambda_handler(event: dict, context):
     }
 ```
 
+## ロールの設定
+
+呼び出す側の実行ロールに下記を足す
+
+```json
+{
+    "Effect": "Allow",
+    "Action": [
+        "lambda:InvokeFunction"
+    ],
+    "Resource": "*"
+}
+```
+
 ## 参考
 
 https://rukurx.hatenablog.jp/entry/2020/07/28/112009

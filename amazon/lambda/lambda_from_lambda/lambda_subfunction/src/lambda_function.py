@@ -1,31 +1,16 @@
 import os
 import json
-import logging
-
-import boto3
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-SUBFUNCTION_NAME = 'lambda_subfunction'
+import datetime
 
 
 def lambda_handler(event, context):
-    logger.info(json.dumps(event))
-
-    print(f'payload to subfunction: {event}')
-
-    client = boto3.client('lambda')
-    client.invoke(
-        FunctionName=SUBFUNCTION_NAME,
-        InvocationType='Event',
-        LogType='Tail',
-        Payload=json.dumps(event)
-    )
+    today = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=9))).date()
+    print(f'subfunction called {today}')
+    print(f'payload from main function: {event}')
 
     return {
         'statusCode': 200,
-        'body': json.dumps('Finished main function')
+        'body': json.dumps('Finished sub function')
     }
 
 
