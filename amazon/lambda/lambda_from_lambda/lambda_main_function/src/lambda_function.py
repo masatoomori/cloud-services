@@ -7,7 +7,7 @@ import boto3
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-SUBFUNCTION_NAME = 'lambda_subfunction'
+SUBFUNCTION_NAME = 'lambda_subfunction'     # 呼び出す関数名
 
 def call_subfunction(event_orig, i):
     event = event_orig.copy()
@@ -16,7 +16,7 @@ def call_subfunction(event_orig, i):
     client = boto3.client('lambda')
     client.invoke(
         FunctionName=SUBFUNCTION_NAME,
-        InvocationType='Event',
+        InvocationType='Event',     # 非同期に呼び出す
         LogType='Tail',
         Payload=json.dumps(event)
     )
